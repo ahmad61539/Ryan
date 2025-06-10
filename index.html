@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Website Face Aging</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+
+</head>
+<body>
+  <div class="form-box">
+    <h2>Upload Foto Anda untuk Face Aging</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="photo" accept="image/*" required>
+      <br>
+      <button type="submit">Proses</button>
+    </form>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      result.innerHTML = "<p>Memproses foto, tunggu sebentar...</p>";
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error("Gagal memproses gambar.");
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        result.innerHTML = `<h3>Hasil:</h3><img src="${url}" alt="Hasil Aging">`;
+      } catch (error) {
+        result.innerHTML = `<p style="color:red;">Terjadi kesalahan: ${error.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
